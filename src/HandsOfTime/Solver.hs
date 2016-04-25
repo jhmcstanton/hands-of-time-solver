@@ -1,6 +1,8 @@
 {-# LANGUAGE LambdaCase #-}
 module HandsOfTime.Solver
        (
+         testPuz, -- remove this when done testing
+         solve
        )
 where
 
@@ -19,7 +21,6 @@ move :: Int -> Board -> Maybe Board
 move index puzzle = do
   moveAmount <- board puzzle V.! index -- getting a maybe index, not a safe return!
   let boardLength = V.length . board $ puzzle
---  let newHands = Hands ((counterClock (hands puzzle) - moveAmount) `mod` boardLength) ((clock (hands puzzle) + moveAmount) `mod` boardLength)
   let newHands = Hands ((index - moveAmount) `mod` boardLength) ((index + moveAmount) `mod` boardLength)
   let newBoard = V.update (board puzzle) (V.fromList [(index, Nothing)])
   return $ puzzle { hands = newHands, board = newBoard, steps = steps puzzle + 1 }
@@ -41,7 +42,7 @@ solve' (Just start) puz =
   where
     puz' = move start puz
 solve' Nothing puz@(Puzzle _ (Hands counterClock clock) _)
-  | steps puz == V.length (board puz) - 1 = [[ fromJust . fromJust $ V.find isJust (board puz)]] -- done!
+  | steps puz == V.length (board puz) = [[]] -- done!
   | otherwise = maybeConcat (updatePositions counterClock counterPuz) (updatePositions clock forwardPuz)
     where
       (counterPuz, forwardPuz)  = bothMoves puz
