@@ -17,7 +17,8 @@ clockWidth = mkWidth 500
 
 diagDir    = "diagrams/"
 
-mkBase n   = trailVertices $ reverseLocTrail $ regPoly n 1
+mkBase n   = trailVertices $ reverseLocTrail $ rotateBy rotateAmt $ regPoly n 1 where
+  rotateAmt = (1 / 4) + if odd (floor $ (fromIntegral $ n - 2) / 2) then 1 / (2 * (fromIntegral n)) else 1 / (fromIntegral n)
 
 node :: Int -> Diagram B
 node n =
