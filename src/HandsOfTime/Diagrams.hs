@@ -1,6 +1,7 @@
 {-# LANGUAGE TypeFamilies              #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE MultiWayIf                #-}
 module HandsOfTime.Diagrams
        (
          renderInitial,
@@ -17,8 +18,13 @@ clockWidth = mkWidth 500
 
 diagDir    = "diagrams/"
 
+
 mkBase n   = trailVertices $ reverseLocTrail $ rotateBy rotateAmt $ regPoly n 1 where
-  rotateAmt = (1 / 4) + if odd (floor $ (fromIntegral $ n - 2) / 2) then 1 / (2 * (fromIntegral n)) else 1 / (fromIntegral n)
+  n'        = fromIntegral n
+  rotateAmt = if | n == 5 -> 2 / 5
+                 | odd n  -> (fromIntegral $ floor (n' / 2) - 1) * (1 / n')
+                 | odd (floor $ (n' - 2) / 2) -> (1 / 4) + 1 / (2 * n')
+                 | otherwise    -> (1 / 4) + 1 / n'
 
 node :: Int -> Diagram B
 node n =
