@@ -12,9 +12,9 @@ The output is generated using the [diagrams](https://hackage.haskell.org/package
 
 ## Provided Puzzle
 
-![Provided Puzzle](diagrams/clock.svg)
+![Provided Puzzle](https://github.com/jhstanton/hands-of-time-solver/blob/master/diagrams/clock.svg "Provided Puzzle")
 
 ## One Possible Solution 
 
-![One Solution](diagrams/solution0.svg)
+![One Solution](https://github.com/jhstanton/hands-of-time-solver/blob/master/diagrams/solution0.svg "One Solution")
 
