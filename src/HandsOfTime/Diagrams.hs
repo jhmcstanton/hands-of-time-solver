@@ -14,32 +14,37 @@ import           Diagrams.Prelude
 import           Diagrams.Backend.SVG
 
 import           Data.Monoid (mappend)
+import           Data.Maybe  (fromJust)
+import           Data.List   (sortBy, elemIndex)
+
 
 clockWidth = mkWidth 500
 
 diagDir    = "diagrams/"
 
 
-mkBase n   = trailVertices $ reverseLocTrail $ rotateBy rotateAmt $ regPoly n 1 where
+mkBase n    = trailVertices $ reverseLocTrail $ rotateBy rotateAmt $ regPoly n 1 where
   n'        = fromIntegral n
   rotateAmt = if | n == 5 -> 2 / 5
                  | odd n  -> (fromIntegral $ floor (n' / 2) - 1) * (1 / n')
                  | odd (floor $ (n' - 2) / 2) -> (1 / 4) + 1 / (2 * n')
-                 | otherwise    -> (1 / 4) + 1 / n'
+                 | otherwise                  -> (1 / 4) + 1 / n'
 
 node :: Int -> Diagram B
 node n =
   text (show n) # fontSizeL 0.2
                 # fc black <> circle 0.2
-                # named (show n)
+                # named (show n) 
                 
 
 mkClock :: [Int] -> Diagram B
-mkClock xs = atPoints (mkBase $ length xs) $ fmap node xs
+mkClock xs = atPoints (mkBase $ length xs) $ fmap node xs 
 
 mkSolutions :: [[Int]] -> [Diagram B]
 mkSolutions solutions = fmap mkClock' solutions where
-  mkClock' positions  = mkClock positions # applyAll [connectOutside' arrOpts (show p) (show $ p + 1) | p <- positions]
+  mkClock' positions  = mkClock positions' # applyAll [connectOutside' arrOpts (show p) (show $ (p + 1)) | p <- positions]
+    where
+      positions' = zipWith (\n ps -> fromJust $ elemIndex n ps) [0..length positions - 1] (repeat positions)
 
                                                        
 arrOpts = with & gaps .~ small
