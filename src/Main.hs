@@ -11,6 +11,7 @@ import           Text.Blaze.Html.Renderer.Text
 import           Data.Monoid
 import           Data.Text.Lazy (pack)
 import           Control.Monad.IO.Class
+import           System.Directory (createDirectoryIfMissing)
 
 import           HandsOfTime.Solver
 import           HandsOfTime.Solver.Types (mkPuzzle)
@@ -19,20 +20,21 @@ import           HandsOfTime.Diagrams
 
 portNumber  = 3000
 
-main = scotty portNumber $ do
-  middleware $ staticPolicy (noDots >-> addBase "")
-  get "/" $ do
-    setHeader "Content-Type" "text/html; charset=utf-8"
-    html $ renderHtml index
-  get "/solutions" $ do
-    clock <- param "clock" 
-    let clockVals = fmap read $ words $ fmap (\case { '+' -> ' '; x -> x }) clock
-        clock'    = mkPuzzle clockVals 
-        solutions = solve $ clock'
-    clockPath     <- liftIO $ renderInitial clockVals "clock"
-    solutionPaths <- liftIO $ renderSolutions solutions
-    html . renderHtml $ mkSolutionPage clockPath solutionPaths
---    html $ "in solutions! clock = " <> (pack clock)
+main = do
+  createDirectoryIfMissing False diagDir
+  scotty portNumber $ do
+    middleware $ staticPolicy (noDots >-> addBase "")
+    get "/" $ do
+      setHeader "Content-Type" "text/html; charset=utf-8"
+      html $ renderHtml index
+    get "/solutions" $ do
+      clock <- param "clock" 
+      let clockVals = fmap read $ words $ fmap (\case { '+' -> ' '; x -> x }) clock
+          clock'    = mkPuzzle clockVals 
+          solutions = solve $ clock'
+      clockPath     <- liftIO $ renderInitial clockVals "clock"
+      solutionPaths <- liftIO $ renderSolutions solutions
+      html . renderHtml $ mkSolutionPage clockPath solutionPaths
 
 mkSolutionPage :: FilePath -> [FilePath] -> H.Html
 mkSolutionPage clockFile solutions = H.docTypeHtml $ (H.head $ H.title "Hands of Time Solver!") <> (H.body $ clockHtml <> solutionsHtml)
