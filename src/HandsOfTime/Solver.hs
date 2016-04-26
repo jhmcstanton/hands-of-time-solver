@@ -12,6 +12,7 @@ import qualified Data.Vector as V
 import           Data.Monoid
 import           Data.Maybe (fromJust, isJust)
 
+
 type Positions = [Int]
 
 testPuz = mkPuzzle [2, 3, 2, 3, 3, 3, 1, 4]

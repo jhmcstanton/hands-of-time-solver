@@ -5,7 +5,8 @@
 module HandsOfTime.Diagrams
        (
          renderInitial,
-         renderSolutions
+         renderSolutions,
+         diagDir
        )
 where
 
@@ -39,19 +40,23 @@ mkClock xs = atPoints (mkBase $ length xs) $ fmap node xs
 mkSolutions :: [[Int]] -> [Diagram B]
 mkSolutions solutions = fmap mkClock' solutions where
   mkClock' positions  = mkClock positions # applyAll [connectOutside' arrOpts (show p) (show $ p + 1) | p <- positions]
-  --[connectPerim' arrOpts (show p) (show $ p + 1) (2/12 @@ turn) (4/12 @@ turn) | p <- positions]
 
                                                        
 arrOpts = with & gaps .~ small
 
 -- adds the file extension!
-renderInitial :: [Int] -> FilePath -> IO ()
-renderInitial xs path = renderSVG (diagFileName path) clockWidth $ mkClock xs
+renderInitial :: [Int] -> FilePath -> IO FilePath
+renderInitial xs path = (renderSVG (diagFileName path) clockWidth $ mkClock xs) >> return (diagFileName path)
 
---                            
-renderSolutions :: [[Int]] -> IO ()
+renderSolutions :: [[Int]] -> IO [FilePath]
 renderSolutions solutions =
-  mapM_ (\(dia, n) -> renderSVG (diagFileName $ "solution" <> show n) clockWidth dia) $ zip (mkSolutions solutions) [0..]
+  mapM (\(dia, n) -> renderSVG (solutionName n) clockWidth dia >> return (solutionName n)) $ zip (mkSolutions solutions) [0..]
+  where
+    solutionName n = diagFileName $ "solution" <> show n
+
+renderTogether :: FilePath -> [Int] -> [[Int]] -> IO ()
+renderTogether path clock solutions = renderSVG (diagFileName path) clockWidth diagram where
+  diagram = foldr1 (===) $ mkClock clock : mkSolutions solutions
 
 diagFileName :: FilePath -> FilePath
 diagFileName path = diagDir `mappend` path `mappend` ".svg"
