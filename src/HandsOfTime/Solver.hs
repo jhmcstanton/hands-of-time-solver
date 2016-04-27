@@ -33,7 +33,7 @@ bothMoves puz@(Puzzle _ (Hands counterClock clock) _)
 
 
 solve :: InitBoard -> [Positions]
-solve puzzle = concat $ zipWith solve' [ Just x | x <- [1..V.length (board puzzle) - 1]] (repeat $ fmap Just puzzle)
+solve puzzle = concat $ zipWith solve' [ Just x | x <- [0..V.length (board puzzle) - 1]] (repeat $ fmap Just puzzle)
 
 solve' :: Maybe Int -> Board -> [Positions]
 solve' (Just start) puz =
