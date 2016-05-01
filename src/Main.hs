@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
@@ -28,12 +29,14 @@ main = do
       setHeader "Content-Type" "text/html; charset=utf-8"
       html $ renderHtml index
     get "/solutions" $ do
-      clock <- param "clock" 
+      clock <- param "clock"
+      showOrderToClick <- rescue (param "showOrderToClick") (\_ -> return "off" :: ActionM String)
       let clockVals = fmap read $ words $ fmap (\case { '+' -> ' '; x -> x }) clock
           clock'    = mkPuzzle clockVals 
           solutions = solve $ clock'
+          solutionNodes = if showOrderToClick == "on" then Nothing else Just clockVals --fmap (\on -> if on then clockVals else clockVals) showOrderToClick
       clockPath     <- liftIO $ renderInitial clockVals "clock"
-      solutionPaths <- liftIO $ renderSolutions (Just clockVals) solutions
+      solutionPaths <- liftIO $ renderSolutions solutionNodes solutions --(Just clockVals) solutions
       html . renderHtml $ mkSolutionPage clockPath solutionPaths
 
 mkSolutionPage :: FilePath -> [FilePath] -> H.Html
@@ -55,3 +58,6 @@ index = H.docTypeHtml $ (H.head $ H.title "Hands of Time Solver!") <> (H.body (a
     <> (H.input H.! A.type_ "text" H.! A.name "clock" H.! A.placeholder "1 2 3 4 5 6")
     <> H.br
     <> (H.button H.! A.type_ "submit" $ H.toHtml ("Solve!" :: String))
+    <> H.br
+    <> H.label (H.toHtml ("Show Order to Press:" :: String))
+    <> H.input H.! A.type_ "checkbox" H.! A.name "showOrderToClick"
