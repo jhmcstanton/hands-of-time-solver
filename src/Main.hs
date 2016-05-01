@@ -33,7 +33,7 @@ main = do
           clock'    = mkPuzzle clockVals 
           solutions = solve $ clock'
       clockPath     <- liftIO $ renderInitial clockVals "clock"
-      solutionPaths <- liftIO $ renderSolutions solutions
+      solutionPaths <- liftIO $ renderSolutions (Just clockVals) solutions
       html . renderHtml $ mkSolutionPage clockPath solutionPaths
 
 mkSolutionPage :: FilePath -> [FilePath] -> H.Html
