@@ -57,7 +57,7 @@ index = H.docTypeHtml $ (H.head $ H.title "Hands of Time Solver!") <> (H.body (a
   formContents = (H.label H.! A.for "clock" $ H.toHtml ("Clock Values:" :: String))
     <> (H.input H.! A.type_ "text" H.! A.name "clock" H.! A.placeholder "1 2 3 4 5 6")
     <> H.br
-    <> (H.button H.! A.type_ "submit" $ H.toHtml ("Solve!" :: String))
-    <> H.br
     <> H.label (H.toHtml ("Show Order to Press:" :: String))
     <> H.input H.! A.type_ "checkbox" H.! A.name "showOrderToClick"
+    <> H.br
+    <> (H.button H.! A.type_ "submit" $ H.toHtml ("Solve!" :: String))
