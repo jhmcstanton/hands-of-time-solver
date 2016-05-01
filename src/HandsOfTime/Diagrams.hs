@@ -25,10 +25,15 @@ diagDir    = "diagrams/"
 
 mkBase n    = trailVertices $ reverseLocTrail $ rotateBy rotateAmt $ regPoly n 1 where
   n'        = fromIntegral n
-  rotateAmt = if | n == 5 -> 2 / 5
-                 | odd n  -> (fromIntegral $ floor (n' / 2) - 1) * (1 / n')
-                 | odd (floor $ (n' - 2) / 2) -> (1 / 4) + 1 / (2 * n')
-                 | otherwise                  -> (1 / 4) + 1 / n'
+  oddShift n | even n    = 0
+             | n < 10    = 1
+             | n == 11   = 2
+             | otherwise = fromIntegral $ 1 + floor ((fromIntegral n - 10) / 2) 
+  rotateAmt  | n == 5  = 2 / 5
+--             | n == 11 -> (fromIntegral $ floor (n' / 2) - 2) * (1 / n') 
+             | odd n  = (fromIntegral $ floor (n' / 2) - oddShift n) * (1 / n')
+             | odd (floor $ (n' - 2) / 2) = (1 / 4) + 1 / (2 * n')
+             | otherwise                  = (1 / 4) + 1 / n'
 
 node :: Int -> Int -> Diagram B
 node n nameInt =
